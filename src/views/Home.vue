@@ -23,6 +23,8 @@
 
 <script>
 import { INIT_COORDS } from '@/constants/defaultValues';
+import { mapState, mapGetters} from 'vuex'
+import { get } from 'lodash'
 
 export default {
   name: "home",
@@ -42,6 +44,7 @@ export default {
     // this.$refs.mapRef.$mapPromise.then(map => {
     //   map.panTo({ lat: 16.047, lng: 108.17 });
     // });
+
   },
   methods: {
     onMapClick(coords) {
@@ -49,6 +52,7 @@ export default {
       const lng = coords.latLng.lng();
       this.coords = { lat, lng }
       console.log(lat, lng);
+      this.$store.dispatch('getCurrentWeatherByCoord', { lat, lng})
     }
   },
   showPosition: position => {
