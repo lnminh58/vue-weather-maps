@@ -11,7 +11,7 @@ import CurrentWeather from '../api/currentWeather';
 
 const state = {
   currentWeather: {
-    requesting: '',
+    requesting: false,
     status: '',
     result: null,
     error: null
@@ -19,13 +19,13 @@ const state = {
 };
 
 const actions = {
-  async getCurrentWeatherByCoord({ state, commit }, { lat, lng }) {
+  async getCurrentWeatherByCoord({ commit } , lat, lng ) {
     commit(GET_CURRENT_WEATHER_BY_COORD_REQUEST);
     try {
       const res = await CurrentWeather.getCurrentWeather(lat, lng);
       const data = get(res, 'data');
       console.log('data: ', data);
-      commit(GET_CURRENT_WEATHER_BY_COORD_SUCCESS, { data: data });
+      commit(GET_CURRENT_WEATHER_BY_COORD_SUCCESS, data);
     } catch (error) {
       commit(GET_CURRENT_WEATHER_BY_COORD_FAIL, { error: serializeError(error) });
     }
@@ -51,7 +51,7 @@ const mutations = {
 
 const getters = {
   currentWeather: state => {
-    state, 'currentWeather.result.data';
+    state, 'currentWeather.result';
   }
 };
 

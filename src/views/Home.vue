@@ -10,11 +10,7 @@
           class="google-map"
           @click="onMapClick"
         >
-          <GmapMarker
-            :position="coords"
-            :clickable="true"
-            :draggable="true"
-          />
+          <GmapMarker :position="coords" :clickable="true" :draggable="true" />
         </gmap-map>
       </div>
     </div>
@@ -22,9 +18,9 @@
 </template>
 
 <script>
-import { INIT_COORDS } from '@/constants/defaultValues';
-import { mapState, mapGetters} from 'vuex'
-import { get } from 'lodash'
+import { INIT_COORDS } from "@/constants/defaultValues";
+import { mapState, mapGetters } from "vuex";
+import { get } from "lodash";
 
 export default {
   name: "home",
@@ -32,7 +28,16 @@ export default {
     return {
       coords: INIT_COORDS,
       INIT_COORDS
-    }
+    };
+  },
+  computed: {
+    ...mapState({
+      requesting: state =>
+        get(state, "currentWeather.currentWeather.requesting")
+    }),
+    ...mapGetters({
+      currentWeather: 'currentWeather'
+    })
   },
   mounted() {
     // navigator.geolocation.getCurrentPosition(position => {
@@ -44,15 +49,14 @@ export default {
     // this.$refs.mapRef.$mapPromise.then(map => {
     //   map.panTo({ lat: 16.047, lng: 108.17 });
     // });
-
   },
   methods: {
     onMapClick(coords) {
       const lat = coords.latLng.lat();
       const lng = coords.latLng.lng();
-      this.coords = { lat, lng }
+      this.coords = { lat, lng };
       console.log(lat, lng);
-      this.$store.dispatch('getCurrentWeatherByCoord', { lat, lng})
+      this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
     }
   },
   showPosition: position => {
