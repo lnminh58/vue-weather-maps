@@ -24,7 +24,7 @@ const actions = {
     try {
       const res = await CurrentWeather.getCurrentWeather(lat, lng);
       const data = get(res, 'data');
-      console.log('data: ', data);
+      console.log('dataJS', data)
       commit(GET_CURRENT_WEATHER_BY_COORD_SUCCESS, data);
     } catch (error) {
       commit(GET_CURRENT_WEATHER_BY_COORD_FAIL, { error: serializeError(error) });
@@ -50,9 +50,7 @@ const mutations = {
 };
 
 const getters = {
-  currentWeather: state => {
-    state, 'currentWeather.result';
-  }
+  currentWeather: state => get(state, 'currentWeather.result',{})
 };
 
 export default {

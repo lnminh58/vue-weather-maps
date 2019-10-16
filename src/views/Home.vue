@@ -1,6 +1,6 @@
 <template>
   <div class="home container">
-    <div class="row bg-dark py-3">
+    <div class="row bg-dark py-3 50%">
       <div class="col sm-10 md-8 lg-6">
         <gmap-map
           ref="mapRef"
@@ -14,6 +14,14 @@
         </gmap-map>
       </div>
     </div>
+    <div class="row bg mt-3 50%">
+      <div class="col xs-12 sm-8 md-6 lg-4">
+        <div class="form-control currentWeather">
+          <h4>Location: {{ _.get(this.currentWeather, "name")}}</h4>
+          <p>Weather: {{ _.get(this.currentWeather, "weather.slice(1).main")}}</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -23,7 +31,7 @@ import { mapState, mapGetters } from "vuex";
 import { get } from "lodash";
 
 export default {
-  name: "home",
+  name: "currentWeather",
   data() {
     return {
       coords: INIT_COORDS,
@@ -36,7 +44,7 @@ export default {
         get(state, "currentWeather.currentWeather.requesting")
     }),
     ...mapGetters({
-      currentWeather: 'currentWeather'
+      currentWeather: "currentWeather"
     })
   },
   mounted() {
@@ -56,6 +64,7 @@ export default {
       const lng = coords.latLng.lng();
       this.coords = { lat, lng };
       this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
+      console.log('dataComp', this.currentWeather)
     }
   },
   showPosition: position => {
@@ -67,5 +76,11 @@ export default {
 <style scoped>
 .google-map {
   height: 450px;
+}
+.currentWeather {
+  height: 100%;
+  width: 30%;
+  text-align: left;
+  background-image: linear-gradient( rgb(8, 247, 247), rgb(10, 241, 191));
 }
 </style>
