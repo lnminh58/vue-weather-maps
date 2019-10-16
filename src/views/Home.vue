@@ -55,7 +55,6 @@ export default {
       const lat = coords.latLng.lat();
       const lng = coords.latLng.lng();
       this.coords = { lat, lng };
-      console.log(lat, lng);
       this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
     }
   },

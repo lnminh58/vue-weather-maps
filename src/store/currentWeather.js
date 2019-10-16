@@ -19,7 +19,7 @@ const state = {
 };
 
 const actions = {
-  async getCurrentWeatherByCoord({ commit } , lat, lng ) {
+  async getCurrentWeatherByCoord({ commit } , { lat, lng } ) {
     commit(GET_CURRENT_WEATHER_BY_COORD_REQUEST);
     try {
       const res = await CurrentWeather.getCurrentWeather(lat, lng);
