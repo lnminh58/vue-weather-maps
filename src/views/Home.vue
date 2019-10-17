@@ -16,9 +16,15 @@
     </div>
     <div class="row bg mt-3 50%">
       <div class="col xs-12 sm-8 md-6 lg-4">
-        <div class="form-control currentWeather">
-          <h4>Location: {{ _.get(this.currentWeather, "name")}}</h4>
-          <p>Weather: {{ _.get(this.currentWeather, "weather.slice(1).main")}}</p>
+        <div class="row">
+          <div class="form-control currentWeather" @click.native="!onclick">
+            <h4>Location: {{ _.get(this.currentWeather, "name") }}</h4>
+            <p>Weather: {{ _.get(this.weather, "main") }}</p>
+            <p>Detail: {{ _.get(this.weather, "description") }}</p>
+            <p>
+              Temprature: {{ _.get(this.currentWeather, "main.temp") - 273 }} *C
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -35,7 +41,9 @@ export default {
   data() {
     return {
       coords: INIT_COORDS,
-      INIT_COORDS
+      INIT_COORDS,
+      weather: {},
+      onclick: false
     };
   },
   computed: {
@@ -64,11 +72,12 @@ export default {
       const lng = coords.latLng.lng();
       this.coords = { lat, lng };
       this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
-      console.log('dataComp', this.currentWeather)
+      this.weather = this.currentWeather.weather[0];
+      this.$router.push({ path: "/home", query: { lat, lng } });
+    },
+    showPosition: position => {
+      console.log(position.coords.latitude, position.coords.longitude);
     }
-  },
-  showPosition: position => {
-    console.log(position.coords.latitude, position.coords.longitude);
   }
 };
 </script>
@@ -78,9 +87,12 @@ export default {
   height: 450px;
 }
 .currentWeather {
-  height: 100%;
-  width: 30%;
+  color: aliceblue;
+  height: 350px;
+  width: 100%;
   text-align: left;
-  background-image: linear-gradient( rgb(8, 247, 247), rgb(10, 241, 191));
+  background-image: url("https://cdn.pixabay.com/photo/2017/01/19/23/46/panorama-1993645_960_720.jpg");
+  background-size: cover;
+  background-position: center center;
 }
 </style>
