@@ -15,11 +15,55 @@
       </div>
     </div>
     <div class="row bg mt-3 50%">
-      <div class="col xs-12 sm-8 md-6 lg-4">
+      <div class="col xs-12 sm-8 md-6 lg-3">
         <div class="row">
-          <div class="form-control currentWeather" @click.native="!onclick">
+          <div class="form-control currentWeather">
+            <div class="col-lg-3 pl-0">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="searchText"
+                  placeholder="Search for location"
+                />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" @click="searchCity">Search</button>
+                </span>
+              </div>
+            </div>
             <h4>Location: {{ _.get(this.currentWeather, "name") }}</h4>
+
             <p>Weather: {{ _.get(this.weather, "main") }}</p>
+            <img
+              style="height: 64px; width: 64px"
+              alt="light rain"
+              v-if="_.get(this.weather, 'main') === 'Rain'"
+              src="http://ssl.gstatic.com/onebox/weather/64/rain_light.png"
+            />
+            <img
+              style="height: 64px; width: 64px"
+              alt="clear sky"
+              v-else-if="_.get(this.weather, 'main') === 'Clouds'"
+              src="http://ssl.gstatic.com/onebox/weather/64//cloudy.png"
+            />
+            <img
+              style="height: 64px; width: 64px"
+              alt="clear sky"
+              v-else-if="_.get(this.weather, 'main') === 'Clear'"
+              src="http://ssl.gstatic.com/onebox/weather/64//sunny.png"
+            />
+            <img
+              style="height: 64px; width: 64px"
+              alt="clear sky"
+              v-else-if="_.get(this.weather, 'main') === 'Mist'"
+              src="http://ssl.gstatic.com/onebox/weather/64//mist.png"
+            />
+            <img
+              style="height: 64px; width: 64px"
+              alt="clear sky"
+              v-else
+              src="http://ssl.gstatic.com/onebox/weather/64//fog.png"
+            />
             <p>Detail: {{ _.get(this.weather, "description") }}</p>
             <p>
               Temprature: {{ _.get(this.currentWeather, "main.temp") - 273 }} *C
@@ -43,7 +87,7 @@ export default {
       coords: INIT_COORDS,
       INIT_COORDS,
       weather: {},
-      onclick: false
+      searchText: ''
     };
   },
   computed: {
@@ -73,10 +117,13 @@ export default {
       this.coords = { lat, lng };
       this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
       this.weather = this.currentWeather.weather[0];
-      this.$router.push({ path: "/home", query: { lat, lng } });
+      // this.$router.push({ path: "/home", query: { lat, lng } });
     },
     showPosition: position => {
       console.log(position.coords.latitude, position.coords.longitude);
+    },
+    searchCity(){
+      this.$store.dispatch("getCurrentWeatherByCoord", this.searchText);
     }
   }
 };
