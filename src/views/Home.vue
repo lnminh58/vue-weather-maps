@@ -9,6 +9,7 @@
           map-type-id="terrain"
           class="google-map"
           @click="onMapClick"
+          style="text-align: center"
         >
           <GmapMarker :position="coords" :clickable="true" :draggable="true" />
         </gmap-map>
@@ -27,13 +28,19 @@
                   placeholder="Search for location"
                 />
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="button" @click="searchCity">Search</button>
+                  <button
+                    class="btn btn-default"
+                    type="button"
+                    @click="searchCity"
+                  >
+                    Search
+                  </button>
                 </span>
               </div>
             </div>
-            <h4>Location: {{ _.get(this.currentWeather, "name") }}</h4>
+            <h4>Location: {{ this.name }}</h4>
 
-            <p>Weather: {{ _.get(this.weather, "main") }}</p>
+            <p>Weather: {{ this.main }}</p>
             <img
               style="height: 64px; width: 64px"
               alt="light rain"
@@ -64,9 +71,9 @@
               v-else
               src="http://ssl.gstatic.com/onebox/weather/64//fog.png"
             />
-            <p>Detail: {{ _.get(this.weather, "description") }}</p>
+            <p>Detail: {{ this.description }}</p>
             <p>
-              Temprature: {{ _.get(this.currentWeather, "main.temp") - 273 }} *C
+              Temprature: {{ this.temp - 273 }} *C
             </p>
           </div>
         </div>
@@ -81,22 +88,30 @@ import { mapState, mapGetters } from "vuex";
 import { get } from "lodash";
 
 export default {
-  name: "currentWeather",
+  name: "City",
   data() {
     return {
       coords: INIT_COORDS,
       INIT_COORDS,
       weather: {},
-      searchText: ''
+      searchText: "",
+      name: '',
+      main: '',
+      description: '',
+      temp: 273,
+      icon: ''
     };
   },
   computed: {
     ...mapState({
-      requesting: state =>
-        get(state, "currentWeather.currentWeather.requesting")
+      requestingCurrentWeather: state =>
+        get(state, "currentWeather.currentWeather.requesting"),
+      requestingCityWeather: state =>
+        get(state, "currentWeather.cityWeather.requesting")
     }),
     ...mapGetters({
-      currentWeather: "currentWeather"
+      currentWeather: "currentWeather",
+      cityWeather: "cityWeather"
     })
   },
   mounted() {
@@ -117,13 +132,27 @@ export default {
       this.coords = { lat, lng };
       this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
       this.weather = this.currentWeather.weather[0];
+      this.name = get(this.currentWeather, "name")
+      this.main= get(this.weather, "main");
+      this.description = get(this.weather, "description");
+      this.temp = get(this.currentWeather, "main.temp");
+      this.icon = get(this.weather, "icon");
       // this.$router.push({ path: "/home", query: { lat, lng } });
     },
     showPosition: position => {
       console.log(position.coords.latitude, position.coords.longitude);
     },
-    searchCity(){
-      this.$store.dispatch("getCurrentWeatherByCoord", this.searchText);
+    async searchCity() {
+      await this.$store.dispatch("getCurrentWeatherByCity", this.searchText);
+      const lat = get(this.cityWeather, "coord.lat");
+      const lng = get(this.cityWeather, "coord.lon");
+      this.coords = { lat, lng };
+      this.weather = this.cityWeather.weather[0];
+      this.name = get(this.cityWeather, "name")
+      this.main= get(this.weather, "main");
+      this.description = get(this.weather, "description");
+      this.temp = get(this.cityWeather, "main.temp");
+      this.icon = get(this.weather, "icon");
     }
   }
 };

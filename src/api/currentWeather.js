@@ -6,7 +6,7 @@ export default class CurrentWeather {
   static getCurrentWeather(lat, lng,) {
     return http.get (`weather?lat=${lat}&lon=${lng}&appid=${APPID}`)
   };
-  static getCityWeather(location) {
-    return http.get(`weather?q=${location}`)
+  static getCityWeather(cityName) {
+    return http.get(`weather?q=${cityName}&appid=${APPID}`)
   }
 }
