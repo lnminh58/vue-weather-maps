@@ -5,25 +5,24 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import { get } from "lodash";
+import { mapGetters, mapState } from 'vuex';
+import { get } from 'lodash';
 
 export default {
   props: {
     lat: String,
-    lng: String
+    lng: String,
   },
   mounted() {
-    this.$store.dispatch("getForecastWeatherByCoord", this.lat, this.lng);
+    this.$store.dispatch('getForecastWeatherByCoord', this.lat, this.lng);
   },
   computed: {
     ...mapState({
-      requesting: state =>
-        get(state, "forecastWeather.forecastWeather.requesting")
+      requesting: state => get(state, 'forecastWeather.forecastWeather.requesting'),
     }),
     ...mapGetters({
-      forecastWeather: "forecastWeather"
-    })
-  }
+      forecastWeather: 'forecastWeather',
+    }),
+  },
 };
 </script>

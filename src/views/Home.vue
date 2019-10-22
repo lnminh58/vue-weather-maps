@@ -17,64 +17,42 @@
     </div>
     <div class="row bg mt-3 50%">
       <div class="col xs-12 sm-8 md-6 lg-3">
-        <div class="row">
-          <div class="form-control currentWeather">
-            <div class="col-lg-3 pl-0">
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  v-model="searchText"
-                  placeholder="Search for location"
-                />
-                <span class="input-group-btn">
-                  <button
-                    class="btn btn-default"
-                    type="button"
-                    @click="searchCity"
-                  >
-                    Search
-                  </button>
-                </span>
-              </div>
-            </div>
-            <h4>Location: {{ this.name }}</h4>
+        <div class="row currentWeather pt-4">
+          <div class="col-lg-4">
+            <h4>Location: {{ _.get(currentWeather, 'name') }}</h4>
 
-            <p>Weather: {{ this.main }}</p>
+            <p>Weather: {{ _.get(weather, 'main') }}</p>
             <img
               style="height: 64px; width: 64px"
               alt="light rain"
-              v-if="_.get(this.weather, 'main') === 'Rain'"
-              src="http://ssl.gstatic.com/onebox/weather/64/rain_light.png"
+              v-if="_.get(weather, 'icon')"
+              :src="`http://openweathermap.org/img/wn/${_.get(weather, 'icon')}@2x.png`"
             />
-            <img
-              style="height: 64px; width: 64px"
-              alt="clear sky"
-              v-else-if="_.get(this.weather, 'main') === 'Clouds'"
-              src="http://ssl.gstatic.com/onebox/weather/64//cloudy.png"
-            />
-            <img
-              style="height: 64px; width: 64px"
-              alt="clear sky"
-              v-else-if="_.get(this.weather, 'main') === 'Clear'"
-              src="http://ssl.gstatic.com/onebox/weather/64//sunny.png"
-            />
-            <img
-              style="height: 64px; width: 64px"
-              alt="clear sky"
-              v-else-if="_.get(this.weather, 'main') === 'Mist'"
-              src="http://ssl.gstatic.com/onebox/weather/64//mist.png"
-            />
-            <img
-              style="height: 64px; width: 64px"
-              alt="clear sky"
-              v-else
-              src="http://ssl.gstatic.com/onebox/weather/64//fog.png"
-            />
-            <p>Detail: {{ this.description }}</p>
+            <p>Detail: {{ _.get(weather, 'description') }}</p>
             <p>
-              Temprature: {{ this.temp - 273 }} *C
+              Temprature:
+              {{ (_.get(currentWeather, 'main.temp', 0) - 273).toFixed(2) }}
+              &#x2103;
             </p>
+          </div>
+          <div class="col-lg-4  ml-auto">
+            <div class="input-group">
+              <gmap-autocomplete
+                :value="searchText"
+                ref="autoCompleteRef"
+                class="form-control border-light transparent-bg"
+                @place_changed="onPlaceChange"
+              ></gmap-autocomplete>
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-light text-secondary transparent-bg"
+                  type="button"
+                  @click="searchText = ''"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -83,36 +61,29 @@
 </template>
 
 <script>
-import { INIT_COORDS } from "@/constants/defaultValues";
-import { mapState, mapGetters } from "vuex";
-import { get } from "lodash";
+import { INIT_COORDS } from '@/constants/defaultValues';
+import { mapState, mapGetters } from 'vuex';
+import { get } from 'lodash';
 
 export default {
-  name: "City",
+  name: 'City',
   data() {
     return {
       coords: INIT_COORDS,
+      center: INIT_COORDS,
       INIT_COORDS,
-      weather: {},
-      searchText: "",
-      name: '',
-      main: '',
-      description: '',
-      temp: 273,
-      icon: ''
+      searchText: '',
     };
   },
   computed: {
     ...mapState({
-      requestingCurrentWeather: state =>
-        get(state, "currentWeather.currentWeather.requesting"),
-      requestingCityWeather: state =>
-        get(state, "currentWeather.cityWeather.requesting")
+      requestingCurrentWeather: state => get(state, 'currentWeather.currentWeather.requesting'),
+      requestingCityWeather: state => get(state, 'currentWeather.cityWeather.requesting'),
     }),
     ...mapGetters({
-      currentWeather: "currentWeather",
-      cityWeather: "cityWeather"
-    })
+      currentWeather: 'currentWeather',
+      weather: 'weather',
+    }),
   },
   mounted() {
     // navigator.geolocation.getCurrentPosition(position => {
@@ -126,35 +97,37 @@ export default {
     // });
   },
   methods: {
-    onMapClick(coords) {
+    async onMapClick(coords) {
       const lat = coords.latLng.lat();
       const lng = coords.latLng.lng();
       this.coords = { lat, lng };
-      this.$store.dispatch("getCurrentWeatherByCoord", { lat, lng });
-      this.weather = this.currentWeather.weather[0];
-      this.name = get(this.currentWeather, "name")
-      this.main= get(this.weather, "main");
-      this.description = get(this.weather, "description");
-      this.temp = get(this.currentWeather, "main.temp");
-      this.icon = get(this.weather, "icon");
+      await this.$store.dispatch('getCurrentWeatherByCoord', { lat, lng });
       // this.$router.push({ path: "/home", query: { lat, lng } });
     },
     showPosition: position => {
       console.log(position.coords.latitude, position.coords.longitude);
     },
+
+    async onPlaceChange(place) {
+      console.log(place);
+      const { geometry } = place;
+      const lat = get(geometry, 'location.lat')();
+      const lng = get(geometry, 'location.lng')();
+      const coords = { lat, lng };
+      this.searchText = get(place, 'formatted_address');
+      await this.$store.dispatch('getCurrentWeatherByCoord', coords);
+      this.$refs.mapRef.panTo(coords);
+      this.coords = coords;
+    },
+
     async searchCity() {
-      await this.$store.dispatch("getCurrentWeatherByCity", this.searchText);
-      const lat = get(this.cityWeather, "coord.lat");
-      const lng = get(this.cityWeather, "coord.lon");
+      await this.$store.dispatch('getCurrentWeatherByCity', this.searchText);
+      const lat = get(this.currentWeather, 'coord.lat');
+      const lng = get(this.currentWeather, 'coord.lon');
+      this.$refs.mapRef.panTo({ lat, lng });
       this.coords = { lat, lng };
-      this.weather = this.cityWeather.weather[0];
-      this.name = get(this.cityWeather, "name")
-      this.main= get(this.weather, "main");
-      this.description = get(this.weather, "description");
-      this.temp = get(this.cityWeather, "main.temp");
-      this.icon = get(this.weather, "icon");
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -165,10 +138,12 @@ export default {
 .currentWeather {
   color: aliceblue;
   height: 350px;
-  width: 100%;
   text-align: left;
-  background-image: url("https://cdn.pixabay.com/photo/2017/01/19/23/46/panorama-1993645_960_720.jpg");
+  background-image: url('https://cdn.pixabay.com/photo/2017/01/19/23/46/panorama-1993645_960_720.jpg');
   background-size: cover;
   background-position: center center;
+}
+.transparent-bg {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 </style>
