@@ -24,7 +24,6 @@ const actions = {
     try {
       const res = await ForecastWeather.getForecastWeather(lat, lng);
       const data = get(res, 'data');
-      console.log('data', data)
       commit(GET_FORECAST_WEATHER_BY_COORD_SUCCESS, data)
     } catch(error) {
       commit(GET_FORECAST_WEATHER_BY_COORD_FAIL, {error: serializeError(error)})
@@ -50,7 +49,7 @@ const mutations = {
 }
 
 const getters = {
-  forecastWeather:  state => get(state, 'forecastWeather.result')
+  forecastWeather:  state => get(state, 'forecastWeather.result',{})
 }
 
 export default {

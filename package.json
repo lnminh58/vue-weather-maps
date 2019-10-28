@@ -13,6 +13,7 @@
     "core-js": "^2.6.5",
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "popper.js": "^1.15.0",
     "serialize-error": "^5.0.0",
     "vue": "^2.6.10",

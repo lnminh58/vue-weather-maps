@@ -18,7 +18,6 @@ export default new Router({
     {
       path: "/about",
       name: "About",
-      props: (route) => ({ lat: route.query.lat, lng: route.query.lng }),
       component: About
     }
   ]
