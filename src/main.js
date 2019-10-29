@@ -7,6 +7,7 @@ import router from './router';
 import store from './store';
 import lodash from './mixins/lodash';
 import * as VueGoogleMaps from 'vue2-google-maps';
+import moment from 'moment'
 
 Vue.config.productionTip = false;
 const mixins = [lodash];
@@ -18,6 +19,7 @@ Vue.use(VueGoogleMaps, {
     libraries: 'places',
   },
 });
+Vue.use(moment)
 
 new Vue({
   router,

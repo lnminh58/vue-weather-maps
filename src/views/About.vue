@@ -5,7 +5,7 @@
     </h1>
     <div class="row forecast">
       <div class="form-control" v-for="item in _.get(forecastWeather, 'list')" :key="item">
-        {{ item.dt }}
+        {{ formatTime(item.dt) }}
         <img
           style="height: 64px; width: 64px"
           :src="`http://openweathermap.org/img/wn/${_.get(item, 'weather[0].icon')}@2x.png`"
@@ -22,6 +22,7 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 import { get } from 'lodash';
+import moment from 'moment'
 
 export default {
   async mounted() {
@@ -38,6 +39,13 @@ export default {
       forecastWeather: 'forecastWeather',
     }),
   },
+  methods: {
+    formatTime(s) {
+      // s not ms 
+      // h is same 
+      return moment(s*1000).format('dddd')
+    }
+  }
 };
 </script>
 
@@ -45,10 +53,10 @@ export default {
 .container {
   color: white;
   height: 600px;
-  background-image: url('https://media.geeksforgeeks.org/wp-content/uploads/Screen-Shot-2017-11-13-at-10.23.39-AM.png');
+  background-image: url('http://file.vforum.vn/hinh/2015/09/vforum-hinh-nen-mua-thu-2016-by-telasm-7.jpg');
 }
 .form-control {
-  color: whitesmoke;
+  color: white;
   height: 300px;
   width: 13%;
   margin-left: 5px;

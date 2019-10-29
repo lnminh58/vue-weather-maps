@@ -1,7 +1,7 @@
 import http from '../service/http';
 
 const APPID = process.env.VUE_APP_WEATHER_KEY_API;
-const CNT = 7;
+const CNT = 8;
 
 export default class ForecastWeather {
   static getForecastWeather(lat, lng) {
