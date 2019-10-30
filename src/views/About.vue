@@ -3,7 +3,7 @@
     <h1 class="title">
       {{ _.get(forecastWeather, 'city.name') }}
     </h1>
-    <div class="scrollmenu">
+    <div class="scrollbar" id="style-1">
       <ul>
         <li v-for="item in _.get(forecastWeather, 'list')" :key="item">
           {{ formatTime(item.dt) }}
@@ -14,8 +14,23 @@
           />
           {{ (_.get(item, 'temp.day', 0) - 273).toFixed(2) }}&#x2103;
           <br />
-          <br />
           {{ item.weather[0].main }}
+          <br />
+          <br />
+          <div class="forecast-detail">
+            <img
+              src="https://cdn1.iconfinder.com/data/icons/weather-forecast-31/650/cloud-clouds-forecast-512.png"
+            />
+            {{ item.clouds }}
+          </div>
+          <div class="forecast-detail">
+            <img src="https://cdn1.iconfinder.com/data/icons/weather-4/512/wind-512.png" />
+            {{ item.speed }}
+          </div>
+          <div class="forecast-detail">
+            <img src="https://www.flaticon.com/premium-icon/icons/svg/1975/1975488.svg" />
+            {{ item.humidity }}%
+          </div>
         </li>
       </ul>
     </div>
@@ -58,14 +73,14 @@ export default {
   height: 600px;
   background-image: url('http://file.vforum.vn/hinh/2015/09/vforum-hinh-nen-mua-thu-2016-by-telasm-7.jpg');
 }
-.scrollmenu ul {
+.scrollbar ul {
   height: 260px;
   width: 2500px;
   margin-top: 10px auto;
   padding: 10px;
   list-style: none;
 }
-.scrollmenu li {
+.scrollbar li {
   color: white;
   height: 240px;
   width: 150px;
@@ -74,11 +89,20 @@ export default {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
-.scrollmenu {
+.scrollbar {
   height: 300px;
   width: 475px;
   overflow-x: auto;
   margin: 30px auto;
+}
+.forecast-detail {
+  float: left;
+  clear: both;
+  margin-left: 5px;
+}
+.forecast-detail img {
+  height: 30px;
+  width: 30px;
 }
 .title {
   font-size: 100px;

@@ -19,21 +19,33 @@
       <div class="col xs-12 sm-8 md-6 lg-3">
         <div class="row currentWeather pt-4">
           <div class="col-lg-4">
-            <h4>Location: {{ _.get(currentWeather, 'name') }}</h4>
-
-            <p>Weather: {{ _.get(weather, 'main') }}</p>
+            <h3>{{ _.get(currentWeather, 'name') }}</h3>
             <img
-              style="height: 64px; width: 64px"
+              style="height: 80px; width: 80px"
               alt="light rain"
               v-if="_.get(weather, 'icon')"
               :src="`http://openweathermap.org/img/wn/${_.get(weather, 'icon')}@2x.png`"
             />
-            <p>Detail: {{ _.get(weather, 'description') }}</p>
-            <p>
-              Temprature:
+            <p style="font-size: 50px">
               {{ (_.get(currentWeather, 'main.temp', 0) - 273).toFixed(2) }}
               &#x2103;
             </p>
+            <p>{{ _.get(weather, 'main') }}</p>
+            <p>{{ _.get(weather, 'description') }}</p>
+            <div class="forecast-detail">
+              <img
+                src="https://cdn1.iconfinder.com/data/icons/weather-forecast-31/650/cloud-clouds-forecast-512.png"
+              />
+              {{ _.get(currentWeather, 'clouds.all') }}
+            </div>
+            <div class="forecast-detail">
+              <img src="https://cdn1.iconfinder.com/data/icons/weather-4/512/wind-512.png" />
+              {{ _.get(currentWeather, 'wind.speed') }}
+            </div>
+            <div class="forecast-detail">
+              <img src="https://www.flaticon.com/premium-icon/icons/svg/1975/1975488.svg" />
+              {{ _.get(currentWeather, 'main.humidity') }}%
+            </div>
           </div>
           <div class="col-lg-4  ml-auto">
             <div class="input-group">
@@ -85,24 +97,13 @@ export default {
       weather: 'weather',
     }),
   },
-  mounted() {
-    // navigator.geolocation.getCurrentPosition(position => {
-    //   console.log(position);
-    // });
-    // At this point, the child GmapMap has been mounted, but
-    // its map has not been initialized.
-    // Therefore we need to write mapRef.$mapPromise.then(() => ...)
-    // this.$refs.mapRef.$mapPromise.then(map => {
-    //   map.panTo({ lat: 16.047, lng: 108.17 });
-    // });
-  },
+  mounted() {},
   methods: {
     async onMapClick(coords) {
       const lat = coords.latLng.lat();
       const lng = coords.latLng.lng();
       this.coords = { lat, lng };
       await this.$store.dispatch('getCurrentWeatherByCoord', { lat, lng });
-      // this.$router.push({ path: "/home", query: { lat, lng } });
     },
     showPosition: position => {
       console.log(position.coords.latitude, position.coords.longitude);
@@ -137,13 +138,21 @@ export default {
 }
 .currentWeather {
   color: aliceblue;
-  height: 350px;
   text-align: left;
   background-image: url('https://cdn.pixabay.com/photo/2017/01/19/23/46/panorama-1993645_960_720.jpg');
   background-size: cover;
   background-position: center center;
+  padding-bottom: 10px;
 }
 .transparent-bg {
   background-color: rgba(255, 255, 255, 0.3);
+}
+.forecast-detail {
+  float: left;
+  clear: both;
+}
+.forecast-detail img {
+  height: 30px;
+  width: 30px;
 }
 </style>
